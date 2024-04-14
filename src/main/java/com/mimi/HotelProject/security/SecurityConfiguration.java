@@ -30,13 +30,16 @@ public class SecurityConfiguration {
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/v3/**",
+                        "/api-docs/**",
+                        "/swagger-resources/**",
+                        "/swagger-ui/**").permitAll()
                         .requestMatchers("/users/refresh-token").permitAll()
                         .anyRequest().authenticated())
-//                .addFilter(new JWTAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtHelper))
-//                .addFilterBefore(new JWTAuthorizationFilter(jwtHelper), UsernamePasswordAuthenticationFilter.class)
-                .formLogin(Customizer.withDefaults())
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtHelper))
+                .addFilterBefore(new JWTAuthorizationFilter(jwtHelper), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
